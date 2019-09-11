@@ -1,0 +1,16 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon index.js",
+    "watch": "nodemon --inspect ./bin/www"
+  },
+  "dependencies": {
+    "koa": "^2.8.1",
+    "koa-json": "^2.0.2",
+    "koa-json-body": "^5.3.0",
+    "koa-router": "^7.4.0",
+    "koa-socket-2": "^1.2.0"
+  }
+}
