@@ -1,11 +1,29 @@
 const socket =  io();
 
-socket.on('countUpdated', data => {
-    console.log('The cout has been updated ', data);
+socket.on('message', msg => {
+    console.log(msg);
 });
 
+document.querySelector('#message-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const textarea = document.querySelector('#message-form textarea'); // e.target.elements[name].value  // - should be name attr 
+    const message = textarea.value;
+    if (message.trim().length) {
+        socket.emit('message', message);
+        textarea.value = '';
+    }
+    textarea.focus();
+});
 
-document.querySelector('#increment').addEventListener('click', () => {
-    console.log('Clicked')
-    socket.emit('increment')
-})
+document.querySelector('#send-location').addEventListener('click', () => {
+    if ( !navigator.geolocation ) {
+        return alert('Geolocation is not supported by your browser');
+    }
+
+    navigator.geolocation.getCurrentPosition(position => {
+        socket.emit('sendLocation', {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+        });
+    });
+});

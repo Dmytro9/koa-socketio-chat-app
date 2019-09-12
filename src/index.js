@@ -7,17 +7,25 @@ const app = new Koa();
 app.use(serve('./public'));
 
 const io = new IO();
- 
 io.attach(app);
-
-let count = 0;
+ 
 
 app._io.on('connection', (socket) => {
-    console.log('New socket connection');
-    socket.on('increment', data => {
-        count++;
-        app._io.emit('countUpdated', count);
-    })
+
+    socket.emit('message', 'Welcome!'); // Send only to one client on connection
+    socket.broadcast.emit('message', 'New user has joined the chat!'); // Send to all client except current connection
+
+    socket.on('message', msg => {
+        app._io.emit('message', msg); // Send to all client
+    });
+
+    socket.on('sendLocation', msg => {
+        app._io.emit('message', `Location: ${msg.longitude} ${msg.latitude}`);
+    });
+
+    socket.on('disconnect', () => {
+        app._io.emit('message', 'User has left');
+    });
        
 });
 

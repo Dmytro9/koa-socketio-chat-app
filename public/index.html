@@ -5,11 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Chat</title>
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-    Chat app!
-    <button id='increment'>+1</button>
+    <h1>Chat app!</h1>
+
+    <form id="message-form">
+        <textarea name="message" id="textarea" cols="30" rows="10" placeholder="Message"></textarea>
+        <button>Send</button>
+    </form>
+    <button id="send-location">Send location</button>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
     <script src="/js/chat.js"></script>
 </body>
-</html>
+</html> 
