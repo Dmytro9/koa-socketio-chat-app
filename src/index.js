@@ -15,12 +15,13 @@ app._io.on('connection', (socket) => {
     socket.emit('message', 'Welcome!'); // Send only to one client on connection
     socket.broadcast.emit('message', 'New user has joined the chat!'); // Send to all client except current connection
 
-    socket.on('message', msg => {
+    socket.on('message', (msg, callback) => {
         app._io.emit('message', msg); // Send to all client
+        callback('Delivered');
     });
 
-    socket.on('sendLocation', msg => {
-        app._io.emit('message', `Location: ${msg.longitude} ${msg.latitude}`);
+    socket.on('sendLocation', coords => {
+        app._io.emit('message', `https://google.com/maps?q=${coords.longitude},${coords.latitude}`);
     });
 
     socket.on('disconnect', () => {

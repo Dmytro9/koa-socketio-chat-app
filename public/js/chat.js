@@ -9,7 +9,9 @@ document.querySelector('#message-form').addEventListener('submit', (e) => {
     const textarea = document.querySelector('#message-form textarea'); // e.target.elements[name].value  // - should be name attr 
     const message = textarea.value;
     if (message.trim().length) {
-        socket.emit('message', message);
+        socket.emit('message', message, (msg) => {
+            console.log('The message was delivered! ', msg);
+        });
         textarea.value = '';
     }
     textarea.focus();
