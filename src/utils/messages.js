@@ -7,4 +7,4 @@ const generateMessage = (text) => {
 
 module.exports = {
     generateMessage
-}
+} 

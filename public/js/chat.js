@@ -13,23 +13,29 @@ const messageTemplate = document.querySelector('#message-template').innerHTML;
 const urlTemplate = document.querySelector('#url-template').innerHTML;
 
 
+// Handlers
 socket.on('message', message => {
     console.log(message);
     const html = Mustache.render(messageTemplate, {
-        message
+        message: message.text,
+        createdAt: moment(message.createdAt).format('h:mm:ss a') 
     });
     $messages.insertAdjacentHTML('beforeend', html);
 });
 
-socket.on('locationMessage', url => {
-    console.log(url);
+socket.on('locationMessage', data => {
+    console.log(data.url);
     const html = Mustache.render(urlTemplate, {
-        url
+        url: data.url,
+        createdAt: moment(data.createdAt).format('h:mm:s a') 
     });
     $messages.insertAdjacentHTML('beforeend', html);
 });
 
 
+// Listeners
+
+// Messages
 $messageForm.addEventListener('submit', (e) => {
     e.preventDefault();
     // const textarea = document.querySelector('#message-form textarea'); // e.target.elements[name].value  // - should be name attr 
@@ -44,6 +50,7 @@ $messageForm.addEventListener('submit', (e) => {
     $messageFormArea.focus();
 });
 
+// Location
 $sendLocationbtn.addEventListener('click', () => {
     if ( !navigator.geolocation ) {
         return alert('Geolocation is not supported by your browser');
