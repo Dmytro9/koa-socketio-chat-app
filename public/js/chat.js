@@ -18,7 +18,7 @@ socket.on('message', message => {
     console.log(message);
     const html = Mustache.render(messageTemplate, {
         message: message.text,
-        createdAt: moment(message.createdAt).format('hh:mm:ss a') 
+        createdAt: moment(message.createdAt).format('h:mm:ss a') 
     });
     $messages.insertAdjacentHTML('beforeend', html);
 });
@@ -27,10 +27,14 @@ socket.on('locationMessage', data => {
     console.log(data.text);
     const html = Mustache.render(urlTemplate, {
         url: data.text,
-        createdAt: moment(data.createdAt).format('hh:mm:s a') 
+        createdAt: moment(data.createdAt).format('h:mm:s a') 
     });
     $messages.insertAdjacentHTML('beforeend', html);
 });
+
+
+// Options
+const { username, room  } = Qs.parse(location.search, { ignoreQueryPrefix: true });
 
 
 // Listeners
@@ -69,3 +73,6 @@ $sendLocationbtn.addEventListener('click', () => {
             });
     });
 });
+
+
+socket.emit('join', { username, room });
