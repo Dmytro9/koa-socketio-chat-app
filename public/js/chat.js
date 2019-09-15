@@ -10,7 +10,7 @@ const $messages = document.querySelector('#messages');
 
 // Templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
-const urlTemplate = document.querySelector('#url-template').innerHTML;
+const urlTemplate = document.querySelector('#location-message-template').innerHTML;
 
 
 // Handlers
@@ -18,16 +18,16 @@ socket.on('message', message => {
     console.log(message);
     const html = Mustache.render(messageTemplate, {
         message: message.text,
-        createdAt: moment(message.createdAt).format('h:mm:ss a') 
+        createdAt: moment(message.createdAt).format('hh:mm:ss a') 
     });
     $messages.insertAdjacentHTML('beforeend', html);
 });
 
 socket.on('locationMessage', data => {
-    console.log(data.url);
+    console.log(data.text);
     const html = Mustache.render(urlTemplate, {
-        url: data.url,
-        createdAt: moment(data.createdAt).format('h:mm:s a') 
+        url: data.text,
+        createdAt: moment(data.createdAt).format('hh:mm:s a') 
     });
     $messages.insertAdjacentHTML('beforeend', html);
 });

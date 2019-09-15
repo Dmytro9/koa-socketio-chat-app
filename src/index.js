@@ -5,7 +5,7 @@ const Fitler = require('bad-words');
 const { generateMessage } = require('./utils/messages');
 
 // Port
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3001
 
 // Init koa server
 const app = new Koa();
