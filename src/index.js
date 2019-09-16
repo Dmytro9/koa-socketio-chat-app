@@ -3,6 +3,7 @@ const IO = require('koa-socket-2');
 const serve = require('koa-static');
 const Fitler = require('bad-words');
 const { generateMessage } = require('./utils/messages');
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
 
 // Port
 const port = process.env.PORT || 3001;
@@ -21,17 +22,31 @@ io.attach(app);
 app._io.on('connection', socket => {
   // socket.broadcast.emit('message', generateMessage('New user has joined the chat!')); // Send to all client except current connection
 
-  socket.on('join', ({ username, room }) => {
-    socket.join(room);
+  socket.on('join', (options, callback) => {
 
-    socket.emit('message', generateMessage('Welcome!')); // Send only to one client on connection
+    const { error, user } = addUser({id: socket.id, ...options});
+
+    if (error) {
+        return callback(error)
+    }
+
+    socket.join(user.room);
+
+    socket.emit('message', generateMessage('Admin', 'Welcome!')); // Send only to one client on connection
    
     socket.broadcast
-      .to(room)
+      .to(user.room)
       .emit(
         'message',
-        generateMessage(`${username} has joined the room ${room}!`)
+        generateMessage('Admin', `${user.username} has joined the room ${user.room}!`)
       ); // Sends a message to all active connections in a room except the current connection.
+
+      io.to(user.room).emit('roomData', {
+          room: user.room,
+          users: getUsersInRoom(user.room)
+      });
+
+      callback();
   });
 
   socket.on('message', (msg, callback) => {
@@ -41,23 +56,40 @@ app._io.on('connection', socket => {
       return callback('Profanity is not allowed!');
     }
 
-    io.to('one').emit('message', generateMessage(msg));
+    const user = getUser(socket.id);
+
+    io.to(user.room).emit('message', generateMessage(user.username, msg));
     // app._io.emit('message', generateMessage(msg)); // Send to all client
     callback('Delivered');
   });
 
   socket.on('sendLocation', (coords, callback) => {
-    app._io.emit(
+
+    const user = getUser(socket.id);
+
+    io.to(user.room).emit(
       'locationMessage',
       generateMessage(
+        user.username,
         `https://google.com/maps?q=${coords.longitude},${coords.latitude}`
       )
     );
+
     callback();
   });
 
   socket.on('disconnect', () => {
-    app._io.emit('message', generateMessage('User has left the chat!'));
+    const user = removeUser(socket.id);
+
+    if (user) {
+        io.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left!`));
+        io.to(user.room).emit('roomData', {
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        });
+  
+    }
+    
   });
 });
 
